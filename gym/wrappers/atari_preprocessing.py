@@ -39,7 +39,7 @@ class AtariPreprocessing(gym.Wrapper):
             optimization benefits of FrameStack Wrapper.
     """
 
-    def __init__(self, env, noop_max=30, frame_skip=4, screen_size=84, terminal_on_life_loss=False, grayscale_obs=True,
+    def __init__(self, env, noop_max=30, frame_skip=1, screen_size=400, terminal_on_life_loss=True, grayscale_obs=True,
                  scale_obs=False):
         super().__init__(env)
         assert cv2 is not None, \
