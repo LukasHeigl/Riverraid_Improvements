@@ -16,8 +16,8 @@ class GeneticAgent(object):
 
     population = None
 
-    def __init__(self, action_space):
-        self.action_space = action_space
+    def __init__(self):
+
 
         parser = argparse.ArgumentParser(description=None)
         parser.add_argument('env_id', nargs='?', default='Riverraid-ram-v0', help='Select the environment to run')
@@ -31,9 +31,13 @@ class GeneticAgent(object):
 
         self.env.seed(0)
 
-        population = self.createpopulation()
+        self.population = self.createpopulation()
 
         rewards = self.calculate_fitness()
+
+        print(rewards)
+
+        self.env.close()
 
 
 
@@ -52,7 +56,7 @@ class GeneticAgent(object):
 
         self.env.reset()
 
-        for i in range(chromosome):
+        for i in range(len(chromosome)):
 
             _, reward, done, _ = self.env.step(chromosome[i])
 
@@ -83,11 +87,13 @@ class GeneticAgent(object):
 
     def calculate_fitness(self):
 
-        rewards = None
+        rewards = []
 
-        for h in range(self.population):
+        for h in range(10):
 
-            rewards[h] = self.apply_episode(self.population[h])
+            reward, _ = self.apply_episode(self.population[h])
+
+            rewards.append(reward)
 
         return rewards
 
@@ -95,37 +101,8 @@ class GeneticAgent(object):
 
 if __name__ == '__main__':
 
-    episode_count = 2000
-    reward = 0
-    done = False
+    agent = GeneticAgent()
 
-    outF = open("rewardLog.txt", "w")
 
-    for i in range(episode_count):
-        ob = env.reset()
-        t = 0
-        r = 0
-        while True:
-            action = agent.act(ob, reward, done)
-            #print("Action: ", str(action))
 
-            ob, reward, done, _ = env.step(action)
-            t = t + 1
-            r = r + reward
-            #outF.write(env.observation_space)
-            if done:
-                print(i, t, r)
-                outF.write(str(i))
-                outF.write(", ")
-                outF.write(str(t))
-                outF.write(", ")
-                outF.write(str(r))
-                outF.write("\n")
-                break
-            # Note there's no env.render() here. But the environment still can open window and
-            # render if asked by env.monitor: it calls env.render('rgb_array') to record video.
-            # Video is not recorded every episode, see capped_cubic_video_schedule for details.
 
-    outF.close()
-    # Close the env and write monitor result info to disk
-    env.close()
