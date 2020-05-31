@@ -39,7 +39,7 @@ class AtariPreprocessing(gym.Wrapper):
             optimization benefits of FrameStack Wrapper.
     """
 
-    def __init__(self, env, noop_max=30, frame_skip=1, screen_size=400, terminal_on_life_loss=True, grayscale_obs=True,
+    def __init__(self, env, noop_max=30, frame_skip=1, screen_size=84, terminal_on_life_loss=True, grayscale_obs=True,
                  scale_obs=False):
         super().__init__(env)
         assert cv2 is not None, \
@@ -106,7 +106,19 @@ class AtariPreprocessing(gym.Wrapper):
 
     def reset(self, **kwargs):
         # NoopReset
-        self.env.reset(**kwargs)
+        observ = self.env.reset(**kwargs)  # Lukas: return added
+        noops = self.env.unwrapped.np_random.randint(1, self.noop_max + 1) if self.noop_max > 0 else 0
+        for _ in range(noops):
+            _, _, done, _ = self.env.step(0)
+            if done:
+                self.env.reset(**kwargs)
+        self.lives = self.ale.lives()
+
+        self.obs_buffer[1].fill(0)
+
+        return observ
+
+        '''
         noops = self.env.unwrapped.np_random.randint(1, self.noop_max + 1) if self.noop_max > 0 else 0
         for _ in range(noops):
             _, _, done, _ = self.env.step(0)
@@ -115,11 +127,13 @@ class AtariPreprocessing(gym.Wrapper):
 
         self.lives = self.ale.lives()
         if self.grayscale_obs:
-            self.ale.getScreenGrayscale(self.obs_buffer[0])
+            self.ale.getScreenGrayscale(self.obs_buffer[0])     #TODO
         else:
             self.ale.getScreenRGB2(self.obs_buffer[0])
         self.obs_buffer[1].fill(0)
         return self._get_obs()
+        '''
+
 
     def _get_obs(self):
         if self.frame_skip > 1:  # more efficient in-place pooling

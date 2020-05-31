@@ -7,11 +7,17 @@ import sys, gym, time
 # python keyboard_agent.py SpaceInvadersNoFrameskip-v4
 #
 
+
 env = gym.make('Riverraid-ram-v0' if len(sys.argv)<2 else sys.argv[1])
 
 if not hasattr(env.action_space, 'n'):
     raise Exception('Keyboard agent only supports discrete action spaces')
 ACTIONS = env.action_space.n
+
+print("ACTIONS={}".format(ACTIONS))
+print("Press keys 1 2 3 ... to take actions 1 2 3 ...")
+print("No keys pressed is taking action 0")
+
 SKIP_CONTROL = 0    # Use previous control decision SKIP_CONTROL times, that's how you
                     # can test what skip is still usable.
 

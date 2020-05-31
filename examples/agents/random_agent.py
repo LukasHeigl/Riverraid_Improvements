@@ -22,16 +22,18 @@ if __name__ == '__main__':
     logger.set_level(logger.INFO)
 
     env = gym.make(args.env_id)
-    #env = wrappers.AtariPreprocessing(env)
 
-    print(env.action_space)
 
     # You provide the directory to write to (can be an existing
     # directory, including one with existing data -- all monitor files
     # will be namespaced). You can also dump to a tempdir if you'd
     # like: tempfile.mkdtemp().
     outdir = '~/tmp'
+
     #env = wrappers.Monitor(env, directory=outdir, force=True)
+
+    env = wrappers.AtariPreprocessing(env)
+
     env.seed(0)
     agent = RandomAgent(env.action_space)
 
@@ -47,9 +49,12 @@ if __name__ == '__main__':
         r = 0
         while True:
             action = agent.act(ob, reward, done)
+            #print("Action: ", str(action))
+
             ob, reward, done, _ = env.step(action)
             t = t + 1
             r = r + reward
+            #outF.write(env.observation_space)
             if done:
                 print(i, t, r)
                 outF.write(str(i))

@@ -1,0 +1,21 @@
+MuJoCo Pro Personal license activation key, number 72243, type 6.
+
+Issued to Lukas Heigl <lukas1.heigl@st.oth-regensburg.de>.
+
+Expires May 12, 2021.
+
+This file activates MuJoCo Pro on a single computer with id:
+WINDOWS_A13CAO_QIBPHTIM10104D0SJTB8293
+
+Do not modify this file. Its entire content, including the
+plain text section, is used by the activation manager.
+
+251f9f0dccac332c5976add9ba4a70f62ba38d9ad49fa6df4d933c6099697fd7
+cbc9d7ed2d3f692b7a0710822f8cdee13baab54f57e190d3d4ed534294498d0f
+ba632df4d11c6aca7805cfff917d0bf3c26f4a9135c3d9ce67df310f53158639
+4fc5e06d04999aaf3c6e1766a030abc577cefc7f2e4d83c068a428cb71291956
+e05a3d7a02ad93dac7415eb74cdaa517c813ad5bf91f81fec1618626d24357ae
+2b2203535025b8924818846971e95fc6a4ea2a01c7b82b156035b273c17a7ec5
+a37f68fcb9630b4da5d06c1b6c453ee22bbd5e4a86ea1308fe229cd44327cb3e
+8a35e005d90f0a4b8921e214009507371539e3291665bcfee94d17c4219c87e5
+
