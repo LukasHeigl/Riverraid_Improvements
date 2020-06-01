@@ -11,7 +11,7 @@ class GeneticAgent(object):
 
     plays_per_population = 100
 
-    amount_of_parents = 20
+    amount_of_parents = 10
 
     amount_of_actions = 1000
 
@@ -49,9 +49,15 @@ class GeneticAgent(object):
 
         print(parents)
 
-        print(parents[0]['index'])
+        #print(parents[0]['index'])
 
-        self.perform_crossover(parents[0]['index'], parents[1]['index'])
+        children = self.create_children(parents)
+
+        self.population = children
+
+        self.mutation()
+
+        #self.perform_crossover(parents[0]['index'], parents[1]['index'])
 
         self.env.close()
 
@@ -60,6 +66,40 @@ class GeneticAgent(object):
         returns the reward and the amount of actions taken before either done was returned (death),
         or all given actions were performed
     '''
+
+    def mutation(self):
+
+        for i in range(self.plays_per_population):
+
+            mutation_chance = numpy.random.randint(low=0, high=99)
+
+            amount_of_mutations = 10
+
+            if mutation_chance > 90:
+
+                amount_of_mutations = 50
+
+            else:
+
+                if mutation_chance > 60:
+
+                    amount_of_mutations = 25
+
+            print(self.population[i])
+
+            for j in range(amount_of_mutations):
+
+                action_to_replace = numpy.random.randint(low=0, high=999)
+
+                new_action = numpy.random.randint(low=0, high=17)
+
+                self.population[i][action_to_replace] = new_action
+
+            print(self.population[i])
+
+
+
+
 
     def apply_episode(self, chromosome):
 
@@ -93,6 +133,20 @@ class GeneticAgent(object):
 
         return new_population
 
+
+    def create_children(self, parents):
+
+        children = []
+
+        for i in range(self.amount_of_parents):
+
+            for j in range(self.amount_of_parents):
+
+                child = self.perform_crossover(parents[i]['index'], parents[j]['index'])
+
+                children.append(child)
+
+        return children
 
     def perform_crossover(self, index_parent1, index_parent2):
 
