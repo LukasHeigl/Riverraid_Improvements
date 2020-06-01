@@ -37,29 +37,35 @@ class GeneticAgent(object):
 
         self.population = self.createpopulation()
 
-        rewards, fitness, steps = self.calculate_fitness()
+        outF = open("geneticLog.txt", "w")
 
-        print(fitness)
+        for k in range(20):
 
-        print(rewards)
+            outF.write("Population number ")
 
-        print(steps)
+            outF.write(str(k))
 
-        parents = self.select_crossovers(fitness)
+            outF.write(":\n")
 
-        print(parents)
+            rewards, fitness, steps = self.calculate_fitness()
 
-        #print(parents[0]['index'])
+            parents = self.select_crossovers(fitness)
 
-        children = self.create_children(parents)
+            outF.write("Parents scores:\n")
 
-        self.population = children
+            for i in range(self.amount_of_parents):
 
-        self.mutation()
+                outF.write(str(parents[i]['fitness']))
 
-        #self.perform_crossover(parents[0]['index'], parents[1]['index'])
+                outF.write("\n")
 
-        self.env.close()
+            children = self.create_children(parents)
+
+            self.population = children
+
+            self.mutation()
+
+            self.env.close()
 
     '''
         runs the environment with the actions specified in chromosome
@@ -85,8 +91,6 @@ class GeneticAgent(object):
 
                     amount_of_mutations = 25
 
-            print(self.population[i])
-
             for j in range(amount_of_mutations):
 
                 action_to_replace = numpy.random.randint(low=0, high=999)
@@ -95,7 +99,6 @@ class GeneticAgent(object):
 
                 self.population[i][action_to_replace] = new_action
 
-            print(self.population[i])
 
 
 
