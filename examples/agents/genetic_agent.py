@@ -49,6 +49,10 @@ class GeneticAgent(object):
 
         print(parents)
 
+        print(parents[0]['index'])
+
+        self.perform_crossover(parents[0]['index'], parents[1]['index'])
+
         self.env.close()
 
     '''
@@ -90,14 +94,23 @@ class GeneticAgent(object):
         return new_population
 
 
-    def perform_crossover(self, parent1, parent2):
+    def perform_crossover(self, index_parent1, index_parent2):
 
         child = []
 
-        swap_start = numpy.random.randint(0, (self.plays_per_population / 2 ) - 1)
+        swap_start = numpy.random.randint(0, (self.amount_of_actions / 2) - 1)
 
-        swap_end = numpy.random.randint(self.plays_per_population / 2, self.plays_per_population - 1)
+        swap_end = numpy.random.randint(self.amount_of_actions / 2, self.amount_of_actions)
 
+        child = self.population[index_parent1][:swap_start]
+
+        child = numpy.append(child, self.population[index_parent2][swap_start:swap_end])
+
+        if swap_end < self.amount_of_actions:
+
+            child = numpy.append(child, self.population[index_parent2][swap_end:self.amount_of_actions])
+
+        return child
 
 
 
@@ -110,8 +123,9 @@ class GeneticAgent(object):
             entry = {
 
                 "index": j,
-                "fitness" : fitness[j]
+                "fitness": fitness[j]
             }
+
 
             indexed_fitness.append(entry)
 
