@@ -92,17 +92,20 @@ class AtariPreprocessing(gym.Wrapper):
 
             if done:
                 break
+            '''
             if t == self.frame_skip - 2:
                 if self.grayscale_obs:
                     self.ale.getScreenGrayscale(self.obs_buffer[1])
                 else:
                     self.ale.getScreenRGB2(self.obs_buffer[1])
             elif t == self.frame_skip - 1:
+                
                 if self.grayscale_obs:
                     self.ale.getScreenGrayscale(self.obs_buffer[0])
                 else:
                     self.ale.getScreenRGB2(self.obs_buffer[0])
-        return self._get_obs(), R, done, info
+                '''
+        return 0, R, done, info   #Lukas changed for genetic Algorithm, observation was: self._get_obs()
 
     def reset(self, **kwargs):
         # NoopReset

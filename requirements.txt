@@ -1,0 +1,9 @@
+gym~=0.17.2
+numpy~=1.18.4
+pyglet~=1.5.0
+pytest~=5.4.2
+scipy~=1.4.1
+opencv-python~=4.2.0.34
+setuptools~=46.2.0
+Keras~=2.3.1
+rl~=3.0

@@ -1,14 +1,17 @@
 import argparse
-import sys
+# import sys
 import numpy
 
 import gym
 from gym import wrappers, logger
 
+
 class GeneticAgent(object):
     """A genetic algorithm approach to River raid"""
 
-    plays_per_population = 10
+    plays_per_population = 100
+
+    amount_of_parents = 20
 
     amount_of_actions = 1000
 
@@ -17,7 +20,6 @@ class GeneticAgent(object):
     population = None
 
     def __init__(self):
-
 
         parser = argparse.ArgumentParser(description=None)
         parser.add_argument('env_id', nargs='?', default='Riverraid-ram-v0', help='Select the environment to run')
@@ -29,26 +31,32 @@ class GeneticAgent(object):
 
         self.env = gym.make(args.env_id)
 
+        self.env = wrappers.AtariPreprocessing(self.env)
+
         self.env.seed(0)
 
         self.population = self.createpopulation()
 
-        rewards = self.calculate_fitness()
+        rewards, fitness, steps = self.calculate_fitness()
+
+        print(fitness)
 
         print(rewards)
 
+        print(steps)
+
+        parents = self.select_crossovers(fitness)
+
+        print(parents)
+
         self.env.close()
-
-
-
-
-
 
     '''
         runs the environment with the actions specified in chromosome
         returns the reward and the amount of actions taken before either done was returned (death),
         or all given actions were performed
     '''
+
     def apply_episode(self, chromosome):
 
         episode_reward = 0
@@ -65,23 +73,57 @@ class GeneticAgent(object):
             episode_reward = episode_reward + reward
 
             if done:
-
                 break
 
         return episode_reward, steps_performed
 
-
-
     def act(self, observation, reward, done):
-        return self.action_space.sample()
 
+        return self.action_space.sample()
 
     def createpopulation(self):
 
         population_size = (self.plays_per_population, self.amount_of_actions)
 
         new_population = numpy.random.randint(low=0, high=18, size=population_size)
+
         return new_population
+
+
+    def perform_crossover(self, parent1, parent2):
+
+        child = []
+
+        swap_start = numpy.random.randint(0, (self.plays_per_population / 2 ) - 1)
+
+        swap_end = numpy.random.randint(self.plays_per_population / 2, self.plays_per_population - 1)
+
+
+
+
+    def select_crossovers(self, fitness):
+
+        indexed_fitness = []
+
+        for j in range(self.plays_per_population):
+
+            entry = {
+
+                "index": j,
+                "fitness" : fitness[j]
+            }
+
+            indexed_fitness.append(entry)
+
+        newlist = sorted(indexed_fitness, key=lambda k: k['fitness'], reverse=True)
+
+        parents = []
+
+        for k in range(self.amount_of_parents):
+
+            parents.append(newlist[k])
+
+        return parents
 
 
 
@@ -89,20 +131,27 @@ class GeneticAgent(object):
 
         rewards = []
 
-        for h in range(10):
+        steps = []
 
-            reward, _ = self.apply_episode(self.population[h])
+        fitness = []
+
+        for h in range(self.plays_per_population):
+
+            reward, step = self.apply_episode(self.population[h])
+
+            fit = reward + step
+
+            if step == 1000:
+                fit = fit + 1000
+
+            fitness.append(fit)
+
+            steps.append(step)
 
             rewards.append(reward)
 
-        return rewards
-
+        return rewards, fitness, steps
 
 
 if __name__ == '__main__':
-
     agent = GeneticAgent()
-
-
-
-
