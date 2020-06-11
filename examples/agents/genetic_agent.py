@@ -2,6 +2,8 @@ import argparse
 # import sys
 import numpy
 
+import pickle
+
 import gym
 from gym import wrappers, logger
 
@@ -14,6 +16,8 @@ class GeneticAgent(object):
     amount_of_parents = 10
 
     amount_of_actions = 1000
+
+    population_count = 0
 
     env = None
 
@@ -37,35 +41,86 @@ class GeneticAgent(object):
 
         self.population = self.createpopulation()
 
-        outF = open("geneticLog.txt", "w")
+        pickle.dump(self.population, open('savepopulation.pkl', 'wb'))
+
+        x = pickle.load(open('savepopulation.pkl', 'rb'))
+
+        population_count_file = open("population_count.txt", "r+")
+
+        population_count = int(population_count_file.read())
+
+        genetic_log_file = open("geneticLog.txt", "a")
+
+        genetic_data_file = open("geneticData.txt", "a")
 
         for k in range(20):
 
-            outF.write("Population number ")
+            genetic_log_file.write("Population number ")
 
-            outF.write(str(k))
+            genetic_log_file.write(str(population_count))
 
-            outF.write(":\n")
+            genetic_log_file.write(":\n")
+
+
+
+
 
             rewards, fitness, steps = self.calculate_fitness()
 
-            parents = self.select_crossovers(fitness)
+            parents = self.select_crossovers(fitness, rewards, steps)
 
-            outF.write("Parents scores:\n")
+            genetic_log_file.write("Parents scores:\n")
+
 
             for i in range(self.amount_of_parents):
 
-                outF.write(str(parents[i]['fitness']))
+                genetic_log_file.write(str(parents[i]['fitness']))
 
-                outF.write("\n")
+                genetic_log_file.write("\n")
+
+                genetic_data_file.write(str(population_count))
+
+                genetic_data_file.write(";")
+
+                genetic_data_file.write(str(parents[i]['fitness']))
+
+                genetic_data_file.write(";")
+
+                genetic_data_file.write(str(parents[i]['reward']))
+
+                genetic_data_file.write(";")
+
+                genetic_data_file.write(str(parents[i]['steps']))
+
+                genetic_data_file.write(";")
+
+                if parents[i]['steps'] == 1000:
+                    genetic_data_file.write("1")
+                else:
+                    genetic_data_file.write("0")
+
+                genetic_data_file.write(";")
+
+                genetic_data_file.write("\n")
 
             children = self.create_children(parents)
+
+            population_count = population_count + 1
+
+            #putting the position at the beginning, to delete the line with truncate
+            population_count_file.seek(0)
+
+            population_count_file.truncate()
+
+            population_count_file.write(str(population_count))
 
             self.population = children
 
             self.mutation()
 
             self.env.close()
+
+        pickle.dump(self.population, open('savepopulation.pkl', 'wb'))
 
     '''
         runs the environment with the actions specified in chromosome
@@ -171,7 +226,7 @@ class GeneticAgent(object):
 
 
 
-    def select_crossovers(self, fitness):
+    def select_crossovers(self, fitness, rewards, steps):
 
         indexed_fitness = []
 
@@ -180,7 +235,9 @@ class GeneticAgent(object):
             entry = {
 
                 "index": j,
-                "fitness": fitness[j]
+                "fitness": fitness[j],
+                "reward": rewards[j],
+                "steps": steps[j]
             }
 
 
