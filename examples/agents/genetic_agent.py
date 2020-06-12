@@ -39,11 +39,11 @@ class GeneticAgent(object):
 
         self.env.seed(0)
 
-        self.population = self.createpopulation()
+        #self.population = self.createpopulation()
 
-        pickle.dump(self.population, open('savepopulation.pkl', 'wb'))
 
-        x = pickle.load(open('savepopulation.pkl', 'rb'))
+
+        self.population = pickle.load(open('savepopulation.pkl', 'rb'))
 
         population_count_file = open("population_count.txt", "r+")
 
@@ -116,11 +116,13 @@ class GeneticAgent(object):
 
             self.population = children
 
+            pickle.dump(self.population, open('savepopulation.pkl', 'wb'))
+
             self.mutation()
 
             self.env.close()
 
-        pickle.dump(self.population, open('savepopulation.pkl', 'wb'))
+
 
     '''
         runs the environment with the actions specified in chromosome
