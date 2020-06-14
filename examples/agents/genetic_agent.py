@@ -202,19 +202,41 @@ class GeneticAgent(object):
 
             for j in range(self.amount_of_parents):
 
-                child = self.perform_crossover(parents[i]['index'], parents[j]['index'])
+                child = self.perform_crossover(parents[i], parents[j])
 
                 children.append(child)
 
         return children
 
-    def perform_crossover(self, index_parent1, index_parent2):
+
+
+    def perform_crossover(self, parent1, parent2):
 
         child = []
 
-        swap_start = numpy.random.randint(0, (self.amount_of_actions / 2) - 1)
+        index_parent1 = parent1['index']
 
-        swap_end = numpy.random.randint(self.amount_of_actions / 2, self.amount_of_actions)
+        index_parent2 = parent2['index']
+
+        point_of_death = parent1['steps']
+
+        probability = numpy.random.randint(0, 99)
+
+        swap_start = point_of_death - 10
+
+        if probability > 60:
+            swap_start = point_of_death - 50
+
+        if probability > 90:
+            swap_start = point_of_death - 100
+
+        if swap_start < 0:
+            swap_start = 0
+
+        swap_end = swap_start + 10
+
+        if swap_end > 999:
+            swap_end = 999
 
         child = self.population[index_parent1][:swap_start]
 
@@ -269,7 +291,7 @@ class GeneticAgent(object):
 
             reward, step = self.apply_episode(self.population[h])
 
-            fit = reward + step
+            fit = reward + 2 * step
 
             if step == 1000:
                 fit = fit + 1000
