@@ -23,7 +23,9 @@ class GeneticAgent(object):
 
     population = None
 
-    def __init__(self):
+    def __init__(self, plays_per_population, amount_of_actions, name_of_run):
+
+        plays_per_population = plays_per_population
 
         parser = argparse.ArgumentParser(description=None)
         parser.add_argument('env_id', nargs='?', default='Riverraid-ram-v0', help='Select the environment to run')
@@ -53,7 +55,7 @@ class GeneticAgent(object):
 
         genetic_data_file = open("geneticData.txt", "a")
 
-        for k in range(20):
+        for k in range(60):
 
             genetic_log_file.write("Population number ")
 
