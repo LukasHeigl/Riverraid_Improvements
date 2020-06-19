@@ -25,6 +25,12 @@ class GeneticAgent(object):
 
     mutation_divisor = 100
 
+    maximum_score = 0
+
+    maximum_fitness = 0
+
+    finished_maximum = 0
+
     env = None
 
     population = None
@@ -130,11 +136,9 @@ class GeneticAgent(object):
 
 
 
-    '''
-        runs the environment with the actions specified in chromosome
-        returns the reward and the amount of actions taken before either done was returned (death),
-        or all given actions were performed
-    '''
+    def threshold(self):
+
+
 
     def mutation(self, point_of_death):
 
@@ -154,15 +158,17 @@ class GeneticAgent(object):
 
                     amount_of_mutations = amount_of_mutations * 3
 
-            # mutations before point_of_death
-            for i in range(self.mutations_before_point_of_death):
+            # only if the plane really crashed
+            if point_of_death != self.amount_of_actions:
 
-                action_to_replace = numpy.random.randint(low=0, high=point_of_death)
+                # mutations before point_of_death
+                for h in range(self.mutations_before_point_of_death):
 
-                new_action = numpy.random.randint(low=0, high=17)
+                    action_to_replace = numpy.random.randint(low=point_of_death - self.mutations_before_point_of_death * 3, high=point_of_death)
 
-                self.population[i][action_to_replace] = new_action
+                    new_action = numpy.random.randint(low=0, high=17)
 
+                    self.population[h][action_to_replace] = new_action
 
             # random mutations
             for j in range(amount_of_mutations):
@@ -318,6 +324,16 @@ class GeneticAgent(object):
             steps.append(step)
 
             rewards.append(reward)
+
+            if self.maximum_score < reward:
+
+                self.maximum_score = reward
+
+            if self.maximum_fitness < fitness:
+
+                self.maximum_fitness = fitness
+
+
 
         return rewards, fitness, steps
 
