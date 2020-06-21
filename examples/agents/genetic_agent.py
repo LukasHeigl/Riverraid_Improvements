@@ -31,11 +31,22 @@ class GeneticAgent(object):
 
     finished_maximum = 0
 
+    finish_portion_after = 0
+
+    best_genome = []
+
+    # the actions that the algorithm picked to be the best.
+    # Contains all actions to be performed, not just the ones from this portion of the learning
+    actions_to_take = []
+
+    # how many portions of the game have already been learnt, meaning we start at action portion * amount_of_actions
+    portion = 0
+
     env = None
 
     population = None
 
-    def __init__(self, amount_of_actions, name_of_run, test_data, mutation_divisor, mutations_before_point_of_death):
+    def __init__(self, amount_of_actions, name_of_run, test_data, mutation_divisor, mutations_before_point_of_death, finish_portion_after):
 
         self.amount_of_actions = amount_of_actions
 
@@ -48,6 +59,8 @@ class GeneticAgent(object):
         self.mutation_divisor = mutation_divisor
 
         self.mutations_before_point_of_death = mutations_before_point_of_death
+
+        self.finish_portion_after = finish_portion_after
 
         for genome in self.population:
 
@@ -138,6 +151,13 @@ class GeneticAgent(object):
 
     def threshold(self):
 
+        self.portion = self.portion + 1
+
+
+    def save_env_state(self):
+
+        self.actions_to_take = numpy.concatenate(self.actions_to_take, self.best_genome)
+
 
 
     def mutation(self, point_of_death):
@@ -202,11 +222,21 @@ class GeneticAgent(object):
             if done:
                 break
 
+        if self.finish_portion_after <= 0:
+
+            self.threshold()
+
+            return
+
         return episode_reward, steps_performed
+
+
 
     def act(self, observation, reward, done):
 
         return self.action_space.sample()
+
+
 
     def createpopulation(self):
 
@@ -310,6 +340,8 @@ class GeneticAgent(object):
 
         fitness = []
 
+        at_least_one_finished = False
+
         for h in range(self.plays_per_population):
 
             reward, step = self.apply_episode(self.population[h])
@@ -317,7 +349,17 @@ class GeneticAgent(object):
             fit = reward + 2 * step
 
             if step == 1000:
+
                 fit = fit + 1000
+
+                at_least_one_finished = true
+
+                if self.maximum_score < reward:
+                    self.maximum_score = reward
+
+                if self.maximum_fitness < fitness:
+                    self.maximum_fitness = fitness
+                    self.actions_to_take = self.population[h]
 
             fitness.append(fit)
 
@@ -325,15 +367,9 @@ class GeneticAgent(object):
 
             rewards.append(reward)
 
-            if self.maximum_score < reward:
+        if at_least_one_finished:
 
-                self.maximum_score = reward
-
-            if self.maximum_fitness < fitness:
-
-                self.maximum_fitness = fitness
-
-
+            self.finish_portion_after = self.finish_portion_after - 1
 
         return rewards, fitness, steps
 
