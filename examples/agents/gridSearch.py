@@ -2,7 +2,7 @@
 
 
 class GridSearch(object):
-    """Grid Search applied to the genetic agent for riverrais"""
+    """Grid Search applied to the genetic agent for riverraid"""
 
 
 

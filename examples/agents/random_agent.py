@@ -49,6 +49,8 @@ if __name__ == '__main__':
         r = 0
         while True:
             action = agent.act(ob, reward, done)
+
+            
             #print("Action: ", str(action))
 
             ob, reward, done, _ = env.step(action)

@@ -62,12 +62,6 @@ class GeneticAgent(object):
 
         self.finish_portion_after = finish_portion_after
 
-        for genome in self.population:
-
-            # from 0 to amount_of_actions - 1
-            genome = genome[:amount_of_actions]
-
-
 
         parser = argparse.ArgumentParser(description=None)
         parser.add_argument('env_id', nargs='?', default='Riverraid-ram-v0', help='Select the environment to run')
@@ -87,15 +81,24 @@ class GeneticAgent(object):
 
 
 
-        self.population = pickle.load(open(name_of_run + '_savepopulation.pkl', 'rb'))
+
+
+
+    # will be called by the gridSearch class, the test_data must be the expected action size
+    def run_portion(self, test_data, population_runs, name_of_run):
+
+        self.population = test_data
+
+        # TODO uncomment after first run
+        # self.population = pickle.load(open(name_of_run + '_savepopulation.pkl', 'rb'))
 
         population_count_file = open("population_count.txt", "r+")
 
         population_count = int(population_count_file.read())
 
-        genetic_data_file = open(name_of_run + '_genome_performance.txt', "a")
+        genetic_data_file = open(self.name_of_run + '_genome_performance.txt', "a")
 
-        for k in range(60):
+        for k in range(population_runs):
 
             rewards, fitness, steps = self.calculate_fitness()
 
@@ -119,7 +122,7 @@ class GeneticAgent(object):
 
                 genetic_data_file.write(";")
 
-                if parents[i]['steps'] == amount_of_actions:
+                if parents[i]['steps'] == self.amount_of_actions:
                     genetic_data_file.write("1")
                 else:
                     genetic_data_file.write("0")
@@ -153,12 +156,23 @@ class GeneticAgent(object):
 
         self.portion = self.portion + 1
 
+        self.save_env_state()
+
+        self.population = self.test_data
+
 
     def save_env_state(self):
 
         self.actions_to_take = numpy.concatenate(self.actions_to_take, self.best_genome)
+        # unpickle the last environment
+
+        # perform the new actions of this portion
+
+        # dump the environment here
+        pickle.dump(self.env, open(name_of_run + '_savepopulation.pkl', 'wb'))
 
 
+    def load_env_state(self):
 
     def mutation(self, point_of_death):
 
@@ -352,14 +366,14 @@ class GeneticAgent(object):
 
                 fit = fit + 1000
 
-                at_least_one_finished = true
+                at_least_one_finished = True
 
                 if self.maximum_score < reward:
                     self.maximum_score = reward
 
                 if self.maximum_fitness < fitness:
                     self.maximum_fitness = fitness
-                    self.actions_to_take = self.population[h]
+                    self.best_genome = self.population[h]
 
             fitness.append(fit)
 
