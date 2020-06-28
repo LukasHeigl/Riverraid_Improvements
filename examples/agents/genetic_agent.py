@@ -21,8 +21,6 @@ class GeneticAgent(object):
 
     name_of_run = ""
 
-    test_data = []
-
     mutation_divisor = 100
 
     maximum_score = 0
@@ -33,10 +31,12 @@ class GeneticAgent(object):
 
     finish_portion_after = 0
 
+    portion_finished = False
+
     best_genome = []
 
     # the actions that the algorithm picked to be the best.
-    # Contains all actions to be performed, not just the ones from this portion of the learning
+    # Contains the actions that were picked to be the best in this portion
     actions_to_take = []
 
     # how many portions of the game have already been learnt, meaning we start at action portion * amount_of_actions
@@ -54,7 +54,7 @@ class GeneticAgent(object):
 
         self.test_data = test_data
 
-        self.population = test_data
+        self.population = test_data[self.portion]
 
         self.mutation_divisor = mutation_divisor
 
@@ -77,7 +77,9 @@ class GeneticAgent(object):
 
         self.env.seed(0)
 
-        #self.population = self.createpopulation()
+        pickle.dump(self.env, open(self.name_of_run + '_environment' + self.portion + '.pkl', 'wb'))
+
+
 
 
 
@@ -87,10 +89,9 @@ class GeneticAgent(object):
     # will be called by the gridSearch class, the test_data must be the expected action size
     def run_portion(self, test_data, population_runs, name_of_run):
 
-        self.population = test_data
+        self.name_of_run = name_of_run
 
-        # TODO uncomment after first run
-        # self.population = pickle.load(open(name_of_run + '_savepopulation.pkl', 'rb'))
+        self.population = test_data
 
         population_count_file = open("population_count.txt", "r+")
 
@@ -101,6 +102,11 @@ class GeneticAgent(object):
         for k in range(population_runs):
 
             rewards, fitness, steps = self.calculate_fitness()
+
+            # Whether the portion is finished or not is checked within the fitness function
+            if self.portion_finished:
+
+                return self.best_genome
 
             parents = self.select_crossovers(fitness, rewards, steps)
 
@@ -148,35 +154,48 @@ class GeneticAgent(object):
 
             pickle.dump(self.population, open(name_of_run + '_savepopulation.pkl', 'wb'))
 
-            self.env.close()
+            self.env = self.load_env_state()
 
 
 
     def threshold(self):
 
-        self.portion = self.portion + 1
-
         self.save_env_state()
 
-        self.population = self.test_data
+        self.portion_finished = True
+
 
 
     def save_env_state(self):
 
-        self.actions_to_take = numpy.concatenate(self.actions_to_take, self.best_genome)
         # unpickle the last environment
+        old_environment = pickle.load(open(self.name_of_run + '_environment' + self.portion + '.pkl', 'rb'))
 
         # perform the new actions of this portion
+        for i in range(len(self.best_genome)):
 
-        # dump the environment here
-        pickle.dump(self.env, open(name_of_run + '_savepopulation.pkl', 'wb'))
+            old_environment.step(self.best_genome[i])
+
+        #TODO: get score to grid_search
+
+        self.env = old_environment
+
+        self.portion = self.portion + 1
+
+        # dump the new environment here
+        pickle.dump(self.env, open(self.name_of_run + '_environment' + self.portion + '.pkl', 'wb'))
 
 
     def load_env_state(self):
 
+        return pickle.load(open(self.name_of_run + '_environment' + self.portion + '.pkl', 'rb'))
+
+
     def mutation(self, point_of_death):
 
         for i in range(self.plays_per_population):
+
+            pickle.dump(self.population, open(self.name_of_run + '_savepopulation.pkl', 'wb'))
 
             mutation_chance = numpy.random.randint(low=0, high=99)
 
@@ -223,7 +242,7 @@ class GeneticAgent(object):
         episode_reward = 0
         steps_performed = 0
 
-        self.env.reset()
+        self.env = self.load_env_state()
 
         for i in range(len(chromosome)):
 
@@ -359,6 +378,8 @@ class GeneticAgent(object):
         for h in range(self.plays_per_population):
 
             reward, step = self.apply_episode(self.population[h])
+
+
 
             fit = reward + 2 * step
 
