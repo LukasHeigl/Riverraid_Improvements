@@ -87,9 +87,7 @@ class GeneticAgent(object):
 
 
     # will be called by the gridSearch class, the test_data must be the expected action size
-    def run_portion(self, test_data, population_runs, name_of_run):
-
-        self.name_of_run = name_of_run
+    def run_portion(self, test_data, population_runs):
 
         self.population = test_data
 
@@ -106,7 +104,7 @@ class GeneticAgent(object):
             # Whether the portion is finished or not is checked within the fitness function
             if self.portion_finished:
 
-                return self.best_genome
+                return True, self.best_genome, int(population_count_file.read()), self.maximum_score
 
             parents = self.select_crossovers(fitness, rewards, steps)
 
@@ -155,6 +153,8 @@ class GeneticAgent(object):
             pickle.dump(self.population, open(name_of_run + '_savepopulation.pkl', 'wb'))
 
             self.env = self.load_env_state()
+
+        return False, None, None, None
 
 
 
