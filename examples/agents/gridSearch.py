@@ -28,22 +28,49 @@ def __init__(self):
     # how many portions were learned for what learning session
     progress = {"test": 0}
 
+    # saves the learned (best) actions
+    actions_to_take = {"test": []}
+
+    # saves the maximum score
+    actual_score = {"test": 0}
+
+    required_populations = {"test": 0}
+
+    test_data = []
+
+
+
 # test_data must contain the test_data for the whole planned learning
 # it must be divided into portions containing exactly amount_of_actions actions
-def start_learning_session(self, amount_of_actions, name_of_run, test_data, mutation_divisor, mutations_before_point_of_death, finish_portion_after, population_runs):
+def start_learning_session(self, amount_of_actions, name_of_run, mutation_divisor, mutations_before_point_of_death, finish_portion_after, population_runs):
 
-    geneticAgent = GeneticAgent(amount_of_actions, name_of_run, test_data[self.progress[name_of_run]], mutation_divisor, mutations_before_point_of_death, finish_portion_after)
+    geneticAgent = GeneticAgent(amount_of_actions, name_of_run, self.test_data[self.progress[name_of_run]], mutation_divisor, mutations_before_point_of_death, finish_portion_after)
+
+    pickle.dump(geneticAgent, open(name_of_run + '_agent.pkl', 'wb'))
 
 
 
 
-def continue_learning_session(self, name_of_run):
-    is_finished, best_genome, required_populations, maximum_score = geneticAgent.run_portion(test_data, population_runs)
+def continue_learning_session(self, name_of_run, population_runs):
 
-    pickle.dump(self.population, open(name_of_run + '_agent.pkl', 'wb'))
+    geneticAgent = pickle.load(open(name_of_run + '_agent.pkl', 'rb'))
+
+    is_finished, best_genome, required_populations, maximum_score = \
+        geneticAgent.run_portion(self.test_data[self.progress[name_of_run]], population_runs)
+
+    pickle.dump(geneticAgent, open(name_of_run + '_agent.pkl', 'wb'))
 
     if is_finished:
+
         self.progress[name_of_run] = self.progress[name_of_run] + 1
+
+        numpy.append(self.actions_to_take[name_of_run], best_genome)
+
+        self.actual_score[name_of_run] = maximum_score
+
+        self.required_populations[name_of_run] = required_populations
+
+
 
 
 
