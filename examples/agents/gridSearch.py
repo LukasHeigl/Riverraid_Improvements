@@ -23,6 +23,7 @@ def __init__(self):
 
     # if a genome completed the portion successfully,
     # how many populations should be performed until we settle with the best genome
+    # this is reset every time a better solution is found
     finish_portion_after_sample = {10, 50, 100, 250, 500}
 
     # how many portions were learned for what learning session
@@ -38,13 +39,31 @@ def __init__(self):
 
     test_data = []
 
+    test_data_size = 5000
+
+    init_learning()
+
+
+def init_learning(self):
+
+    self.test_data = numpy.random.randint(low=0, high=18, size=self.test_data_size)
+
+    # if there was enough time, every possible combination of the parameters should be tested multiple times
+
+    start_learning_session(self.amount_of_actions_sample[0], "firstRun100", self.mutation_divisor_sample[0],
+                           self.mutations_before_point_of_death_sample[2], self.finish_portion_after_sample[2]
+                           , 50)
+
+    continue_learning_session("firstRun100", 50)
 
 
 # test_data must contain the test_data for the whole planned learning
 # it must be divided into portions containing exactly amount_of_actions actions
-def start_learning_session(self, amount_of_actions, name_of_run, mutation_divisor, mutations_before_point_of_death, finish_portion_after, population_runs):
+def start_learning_session(self, amount_of_actions, name_of_run, mutation_divisor, mutations_before_point_of_death,
+                           finish_portion_after, population_runs):
 
-    geneticAgent = GeneticAgent(amount_of_actions, name_of_run, self.test_data[self.progress[name_of_run]], mutation_divisor, mutations_before_point_of_death, finish_portion_after)
+    geneticAgent = GeneticAgent(amount_of_actions, name_of_run, self.test_data[self.progress[name_of_run]],
+                                mutation_divisor, mutations_before_point_of_death, finish_portion_after)
 
     pickle.dump(geneticAgent, open(name_of_run + '_agent.pkl', 'wb'))
 
