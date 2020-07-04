@@ -54,7 +54,7 @@ class GeneticAgent(object):
 
         self.test_data = test_data
 
-        self.population = test_data[self.portion]
+        self.population = test_data
 
         self.mutation_divisor = mutation_divisor
 
@@ -77,7 +77,9 @@ class GeneticAgent(object):
 
         self.env.seed(0)
 
-        pickle.dump(self.env, open(self.name_of_run + '_environment' + self.portion + '.pkl', 'wb'))
+        self.env.reset()
+
+        pickle.dump(self.env, open(self.name_of_run + '_environment' + str(self.portion) + '.pkl', 'wb'))
 
 
 
@@ -150,7 +152,7 @@ class GeneticAgent(object):
 
             self.mutation()
 
-            pickle.dump(self.population, open(name_of_run + '_savepopulation.pkl', 'wb'))
+            pickle.dump(self.population, open(self.name_of_run + '_savepopulation.pkl', 'wb'))
 
             self.env = self.load_env_state()
 
@@ -169,7 +171,7 @@ class GeneticAgent(object):
     def save_env_state(self):
 
         # unpickle the last environment
-        old_environment = pickle.load(open(self.name_of_run + '_environment' + self.portion + '.pkl', 'rb'))
+        old_environment = pickle.load(open(self.name_of_run + '_environment' + str(self.portion) + '.pkl', 'rb'))
 
         # perform the new actions of this portion
         for i in range(len(self.best_genome)):
@@ -183,12 +185,12 @@ class GeneticAgent(object):
         self.portion = self.portion + 1
 
         # dump the new environment here
-        pickle.dump(self.env, open(self.name_of_run + '_environment' + self.portion + '.pkl', 'wb'))
+        pickle.dump(self.env, open(self.name_of_run + '_environment' + str(self.portion) + '.pkl', 'wb'))
 
 
     def load_env_state(self):
 
-        return pickle.load(open(self.name_of_run + '_environment' + self.portion + '.pkl', 'rb'))
+        return pickle.load(open(self.name_of_run + '_environment' + str(self.portion) + '.pkl', 'rb'))
 
 
     def mutation(self, point_of_death):
@@ -410,4 +412,5 @@ class GeneticAgent(object):
 
 
 if __name__ == '__main__':
-    agent = GeneticAgent()
+        agent = GeneticAgent()
+
