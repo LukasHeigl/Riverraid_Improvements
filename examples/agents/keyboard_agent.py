@@ -24,6 +24,10 @@ class KeyboardAgent(object):
 
 
 
+
+
+
+
     def __init__(self):
 
         self.env = gym.make('Riverraid-ram-v0' if len(sys.argv) < 2 else sys.argv[1])
@@ -35,6 +39,10 @@ class KeyboardAgent(object):
         print("ACTIONS={}".format(self.ACTIONS))
         print("Press keys 1 2 3 ... to take actions 1 2 3 ...")
         print("No keys pressed is taking action 0")
+
+
+
+    def start(self):
 
         self.env.render()
         self.env.unwrapped.viewer.window.on_key_press = self.key_press
@@ -99,5 +107,6 @@ class KeyboardAgent(object):
 
 if __name__ == '__main__':
         keyboard_agent = KeyboardAgent()
+
 
 

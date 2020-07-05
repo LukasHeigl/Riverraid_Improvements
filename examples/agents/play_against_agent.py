@@ -23,7 +23,18 @@ class PlayAgainstAgent(object):
 
         self.agent2 = Agent2
 
+        t1 = threading.Thread(target=self.agent1.start)
+
+        #t2 = threading.Thread(target=self.agent2.start)
+
+        t1.start()
+
+        while self.agent1.window == None:
+            print("Warten...")
+
         self.window1 = self.agent1.window
+
+        self.window1.height = 400
 
         print("Schluss")
 
